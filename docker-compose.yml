@@ -1,0 +1,36 @@
+version: '3.8'
+
+networks:
+  deposito:
+    name: deposito
+
+services:
+  app-deposito:
+    image: webdevops/php-nginx:8.3
+    container_name: app-deposito
+    restart: on-failure
+    working_dir: /app
+    ports:
+      - "8081:80"
+    volumes:
+      - ./app:/app:rw
+    environment:
+      - WEB_DOCUMENT_ROOT=/app/public
+    depends_on:
+      - db-deposito
+    networks:
+      - deposito
+  db-deposito:
+    image: mysql:8.0
+    container_name: db-deposito
+    command: --default-authentication-plugin=mysql_native_password
+    restart: on-failure
+    volumes:
+      - ./database/db:/var/lib/mysql:rw
+    environment:
+      MYSQL_ROOT_PASSWORD: depositoApp
+      MYSQL_DATABASE: dbdeposito
+    ports:
+    - "3340:3306"  
+    networks:
+      - deposito
